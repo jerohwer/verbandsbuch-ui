@@ -8,18 +8,15 @@
       <v-app-bar-title @click="$router.push('/')">Verbandsbuch</v-app-bar-title>
     </v-app-bar>
 
-    <client-only>
-      <v-navigation-drawer
-          v-model="isDrawerOpen"
-          temporary
-          :location="$vuetify.display.mobile ? 'bottom' : undefined"
-      >
-        <v-list>
-          <v-list-item to="/">Verbandsbuch</v-list-item>
-          <v-list-item to="/info">Info</v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-    </client-only>
+    <v-navigation-drawer
+        v-model="isDrawerOpen"
+        temporary
+    >
+      <v-list>
+        <v-list-item to="/">Verbandsbuch</v-list-item>
+        <v-list-item to="/info">Info</v-list-item>
+      </v-list>
+    </v-navigation-drawer>
 
     <v-main>
       <v-container>
