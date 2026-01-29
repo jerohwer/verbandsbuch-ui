@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "email": "John.Doe@email.de",
+    "name": "John Doe",
+    "admin": true
+  },
+  {
+    "id": 2,
+    "email": "Martin.Fowler@email.de",
+    "name": "Martin Fowler",
+    "admin": false
+  }
+]
