@@ -7,7 +7,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     const config = useRuntimeConfig();
 
     const msFetch = $fetch.create({
-        baseURL: import.meta.server ? config.private.msInternalBaseUrl : config.public.msExternalBaseUrl,
+        baseURL: import.meta.server ? config.msInternalBaseUrl : config.public.msExternalBaseUrl,
         onRequest({request, options, error}) {
             if (session.value?.token) {
                 options.headers.set('Authorization', `Bearer ${session.value?.token}`)
