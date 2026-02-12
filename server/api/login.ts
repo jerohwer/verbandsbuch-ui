@@ -16,7 +16,6 @@ export default defineEventHandler(async (event) => {
             const path = await import('path');
             const jsonFilePath = path.join(process.cwd(), 'devUser.json');
             const devUsers = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
-            console.log("devUsers", devUsers);
             result = {
                 user: devUsers[config.public.devUserIndex],
                 token: "dev-token-1234"
@@ -35,8 +34,10 @@ export default defineEventHandler(async (event) => {
         }
 
         if (result) {
-            await setUserSession(event, result)
-            console.log(`[INFO] /api/login - User ${result.user.id} authentifiziert`)
+            await setUserSession(event, result, {
+                maxAge: 60 * 60
+            })
+            console.info(`[INFO] /api/login - User ${result.user.id} authentifiziert`)
         }
     } catch (error) {
         console.error("[ERROR] /api/login ", error);

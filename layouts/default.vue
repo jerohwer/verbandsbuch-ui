@@ -34,13 +34,18 @@
         </v-sheet>
       </v-container>
     </v-main>
+
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="4000">
+      {{ snackbar.message }}
+    </v-snackbar>
   </v-layout>
 </template>
 <script setup lang="ts">
-import {useUserSession} from "#imports";
+import {useSnackBar, useUserSession} from "#imports";
 
 const isDrawerOpen = ref<boolean>(false);
 const {user, clear} = useUserSession();
+const {snackbar} = useSnackBar()
 
 async function logout() {
   await clear();
