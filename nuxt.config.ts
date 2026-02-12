@@ -8,9 +8,7 @@ export default defineNuxtConfig({
             isDev: false,
             devUserIndex: 0
         },
-        private: {
-            msInternalBaseUrl: ""
-        }
+        msInternalBaseUrl: ""
     },
 
     build: {

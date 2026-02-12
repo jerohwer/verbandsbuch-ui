@@ -21,6 +21,7 @@ export default defineNuxtPlugin((app) => {
     app.vueApp.use(createRulesPlugin({
         aliases: {
             required: (err = 'Dieses Feld ist erforderlich') => v => !!v || err,
+            email: (err = 'Bitte geben Sie eine valide E-Mail an.') => v => new RegExp('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(v) || err,
         }
     }, vuetify.locale))
 

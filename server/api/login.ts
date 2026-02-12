@@ -3,7 +3,6 @@ import type {User} from "#auth-utils";
 
 export default defineEventHandler(async (event) => {
     try {
-
         const {email, password} = await readBody(event)
         const config = useRuntimeConfig();
 
@@ -23,19 +22,16 @@ export default defineEventHandler(async (event) => {
                 token: "dev-token-1234"
             }
         } else {
-            console.log("config.private.msInternalBaseUrl: ", config.private.msInternalBaseUrl)
             result = await $fetch<{
                 user: User,
                 token: string
-            }>(`${config.private.msInternalBaseUrl}/login`, {
+            }>(`${config.msInternalBaseUrl}/login`, {
                 method: "POST",
                 body: {
                     email,
                     password
                 }
             })
-
-            console.log("result: ", result)
         }
 
         if (result) {

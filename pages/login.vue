@@ -18,7 +18,8 @@
           <v-text-field
               v-model="credentials.email"
               label="E-mail"
-              :rules="[rules.required()]"
+              :rules="[rules.required(), rules.email()]"
+              autocomplete="username"
           ></v-text-field>
         </v-row>
         <v-row>
@@ -29,6 +30,7 @@
               :type="showPassword ? 'text' : 'password'"
               :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
               @click:append-inner="showPassword = !showPassword"
+              autocomplete="current-password"
           ></v-text-field>
         </v-row>
         <v-row>
@@ -63,10 +65,6 @@ async function login() {
   } catch {
     alert('Bad credentials')
   }
-}
-
-function required(v) {
-  return !!v || 'Field is required'
 }
 </script>
 

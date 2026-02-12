@@ -6,7 +6,7 @@
     >
       <v-list>
         <v-list-item to="/">Verbandsbuch</v-list-item>
-        <v-list-item to="/info">Info</v-list-item>
+        <v-list-item to="/formular">Verbandsbuch-Formular</v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -16,7 +16,13 @@
       </template>
       <v-app-bar-title @click="$router.push('/')">Verbandsbuch</v-app-bar-title>
       <template v-slot:append>
-        <v-btn variant="text">{{ user?.name }}</v-btn>
+        <v-btn variant="text" class="mr-2">{{ user?.name }}
+          <v-menu activator="parent">
+            <v-list>
+              <v-list-item @click="logout()">Logout</v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
       </template>
     </v-app-bar>
 
@@ -34,8 +40,12 @@
 import {useUserSession} from "#imports";
 
 const isDrawerOpen = ref<boolean>(false);
-const {user} = useUserSession();
+const {user, clear} = useUserSession();
 
+async function logout() {
+  await clear();
+  navigateTo('/login');
+}
 </script>
 <style>
 .v-main {
