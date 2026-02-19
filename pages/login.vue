@@ -5,9 +5,14 @@
   >
     <v-img src="/bbz-logo.png" width="50%"/>
     <p class="text-lg-h3 text-md-h4 text-h5 pt-6 pb-2 text-center">Willkommen auf dem Verbandsbuch des BBZ</p>
-    <p class="text-body-1 pb-6 text-center">
-      Bitte melden Sie sich mit Ihren Zugangsdaten an, um fortzufahren.<br>
-    </p>
+    <div class="pb-3">
+      <p v-if="!showError" class="text-body-1 text-center">
+        Bitte melden Sie sich mit Ihren Zugangsdaten an, um fortzufahren.<br>
+      </p>
+      <v-alert v-else class="mt-5" color="error" variant="flat">
+        Ungültige E-Mail-Adresse oder Passwort
+      </v-alert>
+    </div>
     <v-form
         v-model="form"
         @submit.prevent="login"
@@ -42,11 +47,13 @@
 </template>
 <script setup lang="ts">
 import {useRules} from 'vuetify/labs/rules'
+import {FetchError} from "ofetch";
 
 const {fetch: refreshSession} = useUserSession()
 const form = ref(false)
 const showPassword = ref<boolean>(false);
 const rules = useRules()
+const showError = ref<boolean>(false)
 const credentials = reactive({
   email: '',
   password: '',
@@ -62,8 +69,17 @@ async function login() {
 
     await refreshSession()
     await navigateTo('/')
-  } catch {
-    alert('Bad credentials')
+  } catch (error) {
+    if (error instanceof FetchError && error.status === 401) {
+      showError.value = true
+      return
+    }
+
+    if (error instanceof Error) {
+      throw createError(error)
+    }
+
+    console.error("[ERROR] /api/login ", error);
   }
 }
 </script>

@@ -15,15 +15,14 @@
         <v-app-bar-nav-icon @click.stop="isDrawerOpen = !isDrawerOpen"></v-app-bar-nav-icon>
       </template>
       <v-app-bar-title @click="$router.push('/')">Verbandsbuch</v-app-bar-title>
-      <template v-slot:append>
-        <v-btn variant="text" class="mr-2">{{ user?.name }}
-          <v-menu activator="parent">
-            <v-list>
-              <v-list-item @click="logout()">Logout</v-list-item>
-            </v-list>
-          </v-menu>
-        </v-btn>
-      </template>
+      <v-btn variant="text" class="ml-auto mr-4 justify-end" max-width="40%">
+        <p class="user-name">{{ user?.name }}</p>
+        <v-menu activator="parent">
+          <v-list>
+            <v-list-item @click="logout()">Logout</v-list-item>
+          </v-list>
+        </v-menu>
+      </v-btn>
     </v-app-bar>
 
 
@@ -55,5 +54,10 @@ async function logout() {
 <style>
 .v-main {
   padding-top: 64px !important;
+}
+
+.user-name {
+  text-wrap: auto;
+  font-size: clamp(0.7rem, 2vw, 1rem);
 }
 </style>

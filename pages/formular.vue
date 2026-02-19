@@ -185,6 +185,8 @@
 </template>
 
 <script setup lang="ts">
+import {useRules} from "vuetify/labs/rules";
+
 definePageMeta({
   middleware: ['authenticated'],
 })
@@ -193,10 +195,7 @@ import {computed, reactive, ref, watch} from "vue";
 const formRef = ref<any>(null);
 const formValid = ref(false);
 const snackbar = ref(false);
-
-const rules = {
-  required: (v: any) => (!!v || v === 0) || "Pflichtfeld",
-};
+const rules = useRules()
 
 const materials = [
   "Pflasterstrips",

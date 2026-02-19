@@ -1,10 +1,11 @@
 import {defineStore} from 'pinia'
 import {type AccidentReport, AccidentReportSchema} from "#shared/schemas/accident-report.schema";
-import {NoAuthError} from "#shared/errors/no-auth.error";
 import {useSnackBar} from "#imports";
+import validateUser from "~/composables/validate-user.composable";
 
 export const useAccidentReportStore = defineStore('accidentReportStore', {
     state: () => ({
+        _route: '/entry',
         _accidentReports: [] as AccidentReport[],
         _currentAccidentReportIndex: null as number | null
     }),
@@ -18,37 +19,48 @@ export const useAccidentReportStore = defineStore('accidentReportStore', {
             this._currentAccidentReportIndex = index;
         },
         async getAllAccidentReportsForUser(): Promise<void> {
-            const {fetch, session} = useUserSession();
-            await fetch();
-
-            if (!session.value?.user) throw createError(new NoAuthError())
-
+            await validateUser();
             const {$msFetch} = useNuxtApp();
 
-            const result = await $msFetch('/accidentReport/')
+            const result = await $msFetch(`${this._route}/`)
+            console.log("result: ", result)
 
             const parsedData = AccidentReportSchema.array().safeParse(result)
 
-            if (!parsedData.success) throw createError("")
+            if (!parsedData.success) throw createError(parsedData.error)
 
             this._accidentReports = parsedData.data;
         },
         async saveAccidentReport(accidentReport: AccidentReport): Promise<void> {
+            await validateUser();
             const {$msFetch} = useNuxtApp();
             const {showSnackbarSuccess} = useSnackBar();
-            await $msFetch('/accidentReport/', {
+            await $msFetch(`${this._route}/`, {
                 method: "POST",
                 body: accidentReport
             })
             showSnackbarSuccess("Der Verbandsbucheintrag wurde erfolgreich gespeichert.")
         },
-        async deleteAccidentReport(id: string): Promise<void> {
+
+        async updateReport(accidentReport: AccidentReport): Promise<void> {
+            await validateUser();
             const {$msFetch} = useNuxtApp();
             const {showSnackbarSuccess} = useSnackBar();
-            await $msFetch(`/accidentReport/${id}`, {
+            await $msFetch(`${this._route}/`, {
+                method: "PUT",
+                body: accidentReport
+            })
+            showSnackbarSuccess("Der Verbandsbucheintrag wurde erfolgreich gespeichert.")
+        },
+
+        async deleteAccidentReport(id: string): Promise<void> {
+            await validateUser();
+            const {$msFetch} = useNuxtApp();
+            const {showSnackbarSuccess} = useSnackBar();
+            await $msFetch(`${this._route}/${id}`, {
                 method: "DELETE"
             })
-            showSnackbarSuccess("Der Verbandsbucheitrag wurde erfolgreich gelöscht.")
+            showSnackbarSuccess("Der Verbandsbucheintrag wurde erfolgreich gelöscht.")
         },
     },
 })
