@@ -7,7 +7,7 @@ export const useFirstAidKitStore = defineStore('first-aid-kit-store', {
         _route: '/firstAidKit',
         _productRoute: '/product',
         _firstAidKits: [] as FirstAidKit[],
-        _currentFirstAidKitProducts: [] as Product[]
+        _products: [] as Product[]
     }),
     actions: {
         async getAllFirstAidKits(): Promise<void> {
@@ -21,20 +21,20 @@ export const useFirstAidKitStore = defineStore('first-aid-kit-store', {
 
             this._firstAidKits = parsedData.data
         },
-        async getAllAvailableProductsOfFirstAidKit(id: string): Promise<void> {
+        async getAllProducts(): Promise<void> {
             await validateUser();
             const {$msFetch} = useNuxtApp();
 
-            const result = await $msFetch(`${this._productRoute}/1b2f781b-90db-40d3-89da-f42653ed838e`)
+            const result = await $msFetch(`${this._productRoute}/`)
             const parsedData = ProductSchema.array().safeParse(result)
 
             if (!parsedData.success) throw createError(parsedData.error)
 
-            this._currentFirstAidKitProducts = parsedData.data
+            this._products = parsedData.data
         }
     },
     getters: {
         firstAidKits: (state) => state._firstAidKits,
-        currentFirstAidKitProducts: (state) => state._currentFirstAidKitProducts
+        products: (state) => state._products
     },
 })

@@ -51,9 +51,6 @@ async function logout() {
 }
 </script>
 <style>
-.v-main {
-  padding-top: 64px !important;
-}
 
 .v-application__wrap {
   min-height: unset !important;

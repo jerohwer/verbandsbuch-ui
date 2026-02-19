@@ -162,8 +162,11 @@
             </v-col>
 
             <!-- Button -->
-            <v-col cols="12" class="d-flex justify-end">
-              <v-btn type="submit" color="primary">
+            <v-col cols="12" class="d-flex justify-space-between">
+              <v-btn to="/">
+                Zurück
+              </v-btn>
+              <v-btn type="submit" color="primary" class="justify-end">
                 Speichern
               </v-btn>
             </v-col>
@@ -185,6 +188,7 @@ import {computed, reactive, ref, watch} from 'vue'
 import {useTheme} from 'vuetify'
 import {useRules} from "vuetify/labs/rules";
 import {formatDatetimeGerman, useSnackBar} from "#imports";
+import type {Product} from "#shared/schemas/product.schema";
 
 const route = useRoute()
 const rules = useRules();
@@ -200,6 +204,7 @@ const report = ref<AccidentReport>({
 
 onMounted(async () => {
   await firstAidKitStore.getAllFirstAidKits()
+  await firstAidKitStore.getAllProducts()
   if (isEditing.value) {
     report.value = await accidentReportStore.getAccidentReportById(accidentReportId.value)
     occurredAt.value = toDateString(report.value.occurredAt)
@@ -212,19 +217,19 @@ onMounted(async () => {
 const formRef = ref<any>(null)
 const formValid = ref(false)
 
+interface MaterialOption extends Product {
+  quantity: number
+}
 
-const materialOptions = [
-  {type: 'Pflasterstrips', quantity: 1},
-  {type: 'Wundpflaster (groß)', quantity: 1},
-  {type: 'Sterile Kompresse', quantity: 1},
-  {type: 'Mullbinde', quantity: 1},
-  {type: 'Elastische Binde', quantity: 1},
-  {type: 'Dreiecktuch', quantity: 1},
-  {type: 'Einmalhandschuhe', quantity: 1},
-  {type: 'Desinfektionstuch', quantity: 1},
-  {type: 'Kühlkompresse', quantity: 1},
-  {type: 'Schere', quantity: 1}
-];
+const materialOptions = computed<MaterialOption[]>(() => {
+  return firstAidKitStore.products.reduce((acc: MaterialOption[], currentProduct: Product) => {
+    acc.push({
+      ...currentProduct,
+      quantity: 1
+    })
+    return acc
+  }, [])
+})
 
 function toDateString(date: Date) {
   return date.toISOString().slice(0, 16);
@@ -258,6 +263,8 @@ async function submit() {
   } else {
     await accidentReportStore.saveAccidentReport(report.value)
   }
+
+  navigateTo('/')
 }
 
 </script>
