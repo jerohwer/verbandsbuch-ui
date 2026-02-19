@@ -184,12 +184,12 @@ definePageMeta({
 import {computed, reactive, ref, watch} from 'vue'
 import {useTheme} from 'vuetify'
 import {useRules} from "vuetify/labs/rules";
-import {useSnackBar} from "#imports";
+import {formatDatetimeGerman, useSnackBar} from "#imports";
 
 const route = useRoute()
 const rules = useRules();
 const accidentReportId = computed<string>(() => route.params.id as string)
-const isEditing = computed<boolean>(() => accidentReportId.value === "nem")
+const isEditing = computed<boolean>(() => accidentReportId.value !== "new")
 const accidentReportStore = useAccidentReportStore()
 const firstAidKitStore = useFirstAidKitStore()
 const occurredAt = ref<string>("")
@@ -226,26 +226,8 @@ const materialOptions = [
   {type: 'Schere', quantity: 1}
 ];
 
-// const selectedMaterials = ref<{
-//   type: string,
-//   quantity: number
-// }[]>([])
-
-
 function toDateString(date: Date) {
   return date.toISOString().slice(0, 16);
-}
-
-function formatDatetimeGerman(dt: string) {
-  if (!dt) return '—'
-  const [datePart, timePart] = dt.split('T')
-  if (!datePart || !timePart) return dt
-
-  const [y, m, d] = datePart.split('-')
-  const hhmm = timePart.slice(0, 5)
-  if (!y || !m || !d) return dt
-
-  return `${d}.${m}.${y}, ${hhmm} Uhr`
 }
 
 const internalMaterialMessage = computed(() => {

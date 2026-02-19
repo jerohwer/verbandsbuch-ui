@@ -6,7 +6,6 @@
     >
       <v-list>
         <v-list-item to="/">Verbandsbuch</v-list-item>
-        <v-list-item to="/formular">Verbandsbuch-Formular</v-list-item>
       </v-list>
     </v-navigation-drawer>
 
