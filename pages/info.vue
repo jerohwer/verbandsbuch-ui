@@ -115,7 +115,6 @@
                 hint="Wähle die entnommenen Materialien aus. Danach Anzahl je Material eintragen."
                 persistent-hint
                 density="comfortable"
-                :menu-props="materialMenuProps"
               />
             </v-col>
 
@@ -177,8 +176,12 @@
           </v-row>
         </v-form>
 
-        <v-snackbar v-model="snackbar" timeout="2500">
-          Eintrag validiert – (Demo) in Konsole ausgegeben.
+        <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="2500">
+           Der Eintrag war erfolgreich.
+
+           <template #actions>
+            <v-btn variant="text" @click="snackbar.show = false">Schließen</v-btn>
+           </template>
         </v-snackbar>
       </v-card-text>
     </v-card>
@@ -186,129 +189,129 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: ['authenticated'],
-})
+import { computed, reactive, ref, watch } from "vue";
 
-import { computed, reactive, ref, watch } from 'vue'
-import { useTheme } from 'vuetify'
+const formRef = ref<any>(null);
+const formValid = ref(false);
+const snackbar = reactive({
+  show: false,
+  text: "",
+  color: "success" as "success" | "error" | "info" | "warning",
+});
 
-const theme = useTheme()
-
-const formRef = ref<any>(null)
-const formValid = ref(false)
-const snackbar = ref(false)
-
-const rules = {
-  required: (v: any) => (!!v || v === 0) || 'Pflichtfeld',
+function showSuccess(msg = "Der Eintrag wurde erfolgreich gespeichert.") {
+  snackbar.text = msg;
+  snackbar.color = "success";
+  snackbar.show = true;
 }
 
+function showError(msg = "Speichern fehlgeschlagen.") {
+  snackbar.text = msg;
+  snackbar.color = "error"; 
+  snackbar.show = true;
+}
+
+
+const rules = {
+  required: (v: any) => (!!v || v === 0) || "Pflichtfeld",
+};
+
 const materials = [
-  'Pflasterstrips',
-  'Wundpflaster (groß)',
-  'Sterile Kompresse',
-  'Mullbinde',
-  'Elastische Binde',
-  'Dreiecktuch',
-  'Einmalhandschuhe',
-  'Desinfektionstuch',
-  'Kühlkompresse',
-  'Schere',
-]
+  "Pflasterstrips",
+  "Wundpflaster (groß)",
+  "Sterile Kompresse",
+  "Mullbinde",
+  "Elastische Binde",
+  "Dreiecktuch",
+  "Einmalhandschuhe",
+  "Desinfektionstuch",
+  "Kühlkompresse",
+  "Schere",
+];
 
 const model = reactive({
-  datetime: '',
-  place: '',
-  cause: '',
-  injury: '',
-  firstAid: '',
-  helper: '',
-  kit: '',
-  witness: '',
-})
+  datetime: "",
+  place: "",
+  cause: "",
+  injury: "",
+  firstAid: "",
+  helper: "",
+  kit: "", // Freitext (Raum/Ort)
+  witness: "",
+});
 
 // Multiselect + Mengen
-const selectedMaterials = ref<string[]>([])
-const materialQty = reactive<Record<string, number>>({})
+const selectedMaterials = ref<string[]>([]);
+const materialQty = reactive<Record<string, number>>({});
 
 watch(selectedMaterials, (newVal) => {
   for (const name of newVal) {
-    if (materialQty[name] === undefined) materialQty[name] = 1
+    if (materialQty[name] === undefined) materialQty[name] = 1;
   }
   for (const key of Object.keys(materialQty)) {
-    if (!newVal.includes(key)) delete materialQty[key]
+    if (!newVal.includes(key)) delete materialQty[key];
   }
-})
+});
 
 function formatDatetimeGerman(dt: string) {
-  if (!dt) return '—'
-  const [datePart, timePart] = dt.split('T')
-  if (!datePart || !timePart) return dt
+  if (!dt) return "—";
+  // erwartet: "YYYY-MM-DDTHH:mm"
+  const [datePart, timePart] = dt.split("T");
+  if (!datePart || !timePart) return dt;
 
-  const [y, m, d] = datePart.split('-')
-  const hhmm = timePart.slice(0, 5)
-  if (!y || !m || !d) return dt
+  const [y, m, d] = datePart.split("-");
+  const hhmm = timePart.slice(0, 5); // "HH:mm"
+  if (!y || !m || !d) return dt;
 
-  return `${d}.${m}.${y}, ${hhmm} Uhr`
+  return `${d}.${m}.${y}, ${hhmm} Uhr`;
 }
 
 const healthMessage = computed(() => {
-  if (!selectedMaterials.value.length) return '—'
+  if (!selectedMaterials.value.length) return "—";
 
   const lines = selectedMaterials.value.map((name) => {
-    const qty = materialQty[name] ?? 0
-    return `- ${name}: ${qty}`
-  })
+    const qty = materialQty[name] ?? 0;
+    return `- ${name}: ${qty}`;
+  });
 
   return [
-    'Materialentnahme aus Verbandskasten:',
-    `Verbandskasten (Raum): ${model.kit || '—'}`,
+    "Materialentnahme aus Verbandskasten:",
+    `Verbandskasten (Raum): ${model.kit || "—"}`,
     `Datum/Uhrzeit: ${formatDatetimeGerman(model.datetime)}`,
-    '',
+    "",
     ...lines,
-  ].join('\n')
-})
+  ].join("\n");
+});
 
 async function submit() {
-  const ok = await formRef.value?.validate?.()
-  if (!ok?.valid) return
+  const ok = await formRef.value?.validate?.();
+  if (!ok?.valid) return;
 
-  const payload = {
-    ...model,
-    materials: selectedMaterials.value.map((name) => ({
-      name,
-      qty: materialQty[name] ?? 0,
-    })),
-    healthMessage: healthMessage.value,
+  try {
+    const payload = {
+      ...model,
+      materials: selectedMaterials.value.map((name) => ({
+        name,
+        qty: materialQty[name] ?? 0,
+      })),
+      healthMessage: healthMessage.value,
+    };
+
+    // Hier ein API call
+
+    console.log("Verbandsbuch Payload:", payload);
+
+    showSuccess();
+  } catch (e) {
+    console.error(e);
+    showError("Speichern fehlgeschlagen. Bitte erneut versuchen."); 
   }
-
-  console.log('Verbandsbuch Payload:', payload)
-  snackbar.value = true
 }
 
-
-const materialMenuProps = computed(() => ({
-  attach: 'body',
-  zIndex: 3000,
-  maxHeight: 320,
-  scrim: false,
-  theme: theme.global.name.value,
-  contentClass: 'materials-menu',
-}))
 </script>
 
 <style scoped>
 .v-card-title {
   padding-bottom: 0;
-}
-
-
-:global(.materials-menu) {
-  background: rgb(var(--v-theme-surface));
-  color: rgb(var(--v-theme-on-surface));
-}
-
-:global(.materials-menu .v-list) {
-  background: transparent;
 }
 </style>
