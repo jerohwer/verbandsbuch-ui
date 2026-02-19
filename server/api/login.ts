@@ -1,6 +1,5 @@
 import {setUserSession} from "#imports";
 import type {User} from "#auth-utils";
-import {FetchError} from 'ofetch';
 
 export default defineEventHandler(async (event) => {
     const {email, password} = await readBody(event)

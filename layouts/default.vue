@@ -28,7 +28,7 @@
 
     <v-main>
       <v-container>
-        <v-sheet rounded="lg" elevation="4">
+        <v-sheet rounded="lg" elevation="4" class="pa-4">
           <slot/>
         </v-sheet>
       </v-container>
@@ -54,6 +54,10 @@ async function logout() {
 <style>
 .v-main {
   padding-top: 64px !important;
+}
+
+.v-application__wrap {
+  min-height: unset !important;
 }
 
 .user-name {
