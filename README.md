@@ -1,75 +1,13 @@
-# Nuxt Minimal Starter
+# Verbandsbuch-ui
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Environment-Variablen
 
-## Setup
-
-Make sure to install dependencies:
-
-```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+- `NUXT_SESSION_PASSWORD`: Geheimer Schlüssel (min. 32 Zeichen), den das Modul `nuxt-auth-utils` verwendet, um die
+  Session-Cookies zu verschlüsseln und zu signieren.
+- `NUXT_PUBLIC_MS_EXTERNAL_BASE_URL`: Nuxt betreibt standardmäßig SSR (Server-Side Rendering). Somit sollte es zwei
+  verschiedene Microservice-URLs geben. Eine externe, die vom Client (Browser) aufgerufen werden kann.
+- `NUXT_MS_INTERNAL_BASE_URL`: Und eine interne URL, die nur für den Server gültig ist.
+- `NUXT_PUBLIC_IS_DEV`:
+    - `true`: Beim Login kann man beliebige Werte eingeben, da der Nutzer aus einer `devUser.json` gelesen wird.
+- `NUXT_PUBLIC_DEV_USER_INDEX`: Angabe, welcher User aus der `devUser.json` gelesen werden soll (z.B. `0` für den
+  ersten Eintrag). Nur relevant, wenn `NUXT_PUBLIC_IS_DEV=true` gesetzt ist.
